@@ -1,0 +1,66 @@
+题目描述
+In a movie festival, n movies will be shown. Syrjälä's movie club consists of k members, who will be all attending the festival.
+You know the starting and ending time of each movie. What is the maximum total number of movies the club members can watch entirely if they act optimally?
+输入
+The first input line has two integers n and k: the number of movies and club members.
+After this, there are n lines that describe the movies. Each line has two integers a and b: the starting and ending time of a movie.
+Constraints
+1≤k≤n≤2*105
+1≤a < b≤109
+输出
+Print one integer: the maximum total number of movies.
+样例输入
+5 2
+1 5
+8 10
+3 6
+2 5
+6 9
+样例输出
+4
+题解
+
+code
+#include <bits/stdc++.h>
+using namespace std;
+struct op{
+	int begin,end;
+};
+bool cmp(op&p,op&q){//先按结束时间升序，次按开始时间升序
+	if(p.end==q.end){
+		return p.begin<q.begin;
+	}else{
+		return p.end<q.end;
+	}
+}
+int main(){
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+	int n,k;
+	cin>>n>>k;
+	vector<op> a(n);
+	for(int i=0;i<n;i++){
+		cin>>a[i].begin>>a[i].end;
+	}
+	sort(a.begin(),a.end(),cmp);
+	multiset<int> lastend;//采用multiset，自动排序方便快速查找
+	int ans=0;
+	for(int i=0;i<n;i++){
+		int begin=a[i].begin,end=a[i].end;
+		auto it=lastend.upper_bound(begin);//查找最大的已有end且满足<=新begin
+		if(it!=lastend.begin()){
+			it--;
+			lastend.erase(it);
+			lastend.insert(end);
+			ans++;
+		}else{
+			if((int)lastend.size()<k){//是否有空余人员
+				lastend.insert(end);
+				ans++; 
+			}
+		}
+	}
+	cout<<ans;
+	return 0;
+}
